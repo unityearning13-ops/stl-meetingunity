@@ -532,8 +532,8 @@ export const STLAttendanceView: React.FC<STLAttendanceViewProps> = ({
                 <span>Mark All Present</span>
               </button>
 
-              {/* Reset Day's Attendance button */}
-              {isDayAlreadySaved && (
+              {/* Reset Day's Attendance button (Admin Only) */}
+              {session?.role === 'ADMIN' && isDayAlreadySaved && (
                 <button
                   type="button"
                   onClick={handleClearDayAttendance}
