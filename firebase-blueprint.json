@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "stl": {
+      "title": "STL",
+      "description": "Sub Team Leader account authorized to mark attendance for their team.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100, "description": "Full name of the STL" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Phone number used for login" },
+        "password": { "type": "string", "maxLength": 50, "description": "Login password set by Admin" },
+        "createdAt": { "type": "string", "description": "ISO timestamp of account creation" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp of last update" }
+      },
+      "required": ["name", "phone", "password"]
+    },
+    "member": {
+      "title": "TeamMember",
+      "description": "Team Leader or Team Trainer under an STL whose attendance is tracked.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100, "description": "Full name" },
+        "phone": { "type": "string", "maxLength": 20, "description": "Phone number" },
+        "role": { "type": "string", "enum": ["TEAM_LEADER", "TEAM_TRAINER"], "description": "Member role" },
+        "stlId": { "type": "string", "maxLength": 128, "description": "ID of assigned STL" },
+        "balance": { "type": "number", "description": "Current wallet / account balance in BDT" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["name", "role", "stlId", "balance"]
+    },
+    "attendance": {
+      "title": "AttendanceRecord",
+      "description": "Attendance log for a member on a specific date.",
+      "type": "object",
+      "properties": {
+        "memberId": { "type": "string", "maxLength": 128, "description": "Target team member ID" },
+        "stlId": { "type": "string", "maxLength": 128, "description": "STL ID who marked attendance" },
+        "date": { "type": "string", "maxLength": 10, "description": "Date in YYYY-MM-DD format" },
+        "status": { "type": "string", "enum": ["PRESENT", "ABSENT", "LEAVE"], "description": "Attendance status" },
+        "penaltyDeducted": { "type": "number", "description": "Amount deducted for absence (0 if Present or Leave)" },
+        "notes": { "type": "string", "maxLength": 300, "description": "Optional notes or reason for leave" },
+        "markedAt": { "type": "string", "description": "ISO timestamp when marked" }
+      },
+      "required": ["memberId", "stlId", "date", "status"]
+    },
+    "transaction": {
+      "title": "TransactionRecord",
+      "description": "Financial ledger record of penalty deductions or manual admin balance updates.",
+      "type": "object",
+      "properties": {
+        "memberId": { "type": "string", "maxLength": 128, "description": "Associated member ID" },
+        "type": { "type": "string", "enum": ["PENALTY", "ADMIN_CREDIT", "ADMIN_DEBIT", "REFUND"], "description": "Transaction category" },
+        "amount": { "type": "number", "description": "Amount changed" },
+        "previousBalance": { "type": "number", "description": "Balance before transaction" },
+        "newBalance": { "type": "number", "description": "Balance after transaction" },
+        "reason": { "type": "string", "maxLength": 200, "description": "Description of credit or deduction" },
+        "date": { "type": "string", "maxLength": 10, "description": "Date associated with transaction" },
+        "createdAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["memberId", "type", "amount", "newBalance", "reason"]
+    },
+    "setting": {
+      "title": "SystemSetting",
+      "description": "Global settings including absent penalty rate.",
+      "type": "object",
+      "properties": {
+        "absentPenaltyAmount": { "type": "number", "description": "Fine in BDT deducted per absence" },
+        "platformName": { "type": "string", "maxLength": 100, "description": "Platform display name" },
+        "updatedAt": { "type": "string", "description": "ISO timestamp" }
+      },
+      "required": ["absentPenaltyAmount"]
+    }
+  },
+  "firestore": {
+    "/stls/{stlId}": {
+      "schema": { "$ref": "#/entities/stl" },
+      "description": "STL accounts created and managed by Admin"
+    },
+    "/members/{memberId}": {
+      "schema": { "$ref": "#/entities/member" },
+      "description": "Team Leaders and Team Trainers assigned to STLs"
+    },
+    "/attendance/{attendanceId}": {
+      "schema": { "$ref": "#/entities/attendance" },
+      "description": "Daily attendance logs recorded by STL or Admin"
+    },
+    "/transactions/{transactionId}": {
+      "schema": { "$ref": "#/entities/transaction" },
+      "description": "Financial log of fines and balance changes"
+    },
+    "/settings/{settingId}": {
+      "schema": { "$ref": "#/entities/setting" },
+      "description": "Application settings such as penalty rate"
+    }
+  }
+}

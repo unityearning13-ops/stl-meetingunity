@@ -1,0 +1,6 @@
+{
+  "name": "Unity E-Learning STL Attendance Portal",
+  "description": "Unity Earning E-Learning Platform - STL Meeting Attendance Portal with real-time tracking, Team Leaders and Trainers management, penalty control, and monthly logs.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
